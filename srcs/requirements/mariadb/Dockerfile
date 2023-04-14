@@ -1,15 +1,14 @@
-FROM alpine:3.14
+FROM debian:10.12
 
-RUN apk update && apk upgrade
+RUN apt-get update && apt-get upgrade -y && apt-get install mariadb-server -y
 
-#Mariadb veritabanı sunucusunu ve client uygulamasını yükler. Ayrıca, OpenRC sistem yöneticisini yükler. OpenRC, servislerin (örneğin, veritabanı sunucusu) başlatılması, durdurulması ve yönetilmesi gibi işlemler icin
-RUN apk add mariadb mariadb-client openrc
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY tools/start.sh /start.sh
 
-COPY ./tools/setup.sh /tmp/
-COPY ./tools/my.cnf /etc/mysql/
-
-RUN chmod +x /tmp/setup.sh
+RUN chmod 755 /etc/mysql/mariadb.conf.d/50-server.cnf;
 
 EXPOSE 3306
 
-CMD ["/tmp/setup.sh"]
+CMD bash 'start.sh'; 'bash'
+
+#CMD sleep infinity
